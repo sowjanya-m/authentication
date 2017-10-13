@@ -1,7 +1,6 @@
 package com.telstra.webauth.model;
 
 import javax.persistence.*;
-import java.util.Date;
 import java.util.Set;
 
 @Entity
@@ -12,12 +11,6 @@ public class User {
     private String password;
     private String passwordConfirm;
     private Set<Role> roles;
-    @Transient
-    private String oldPassword;
-    @Column(name = "password_change_date")
-    private Date passwordChangeDate;
-    @Column(name = "password_expiry_date")
-    private Date passwordExpiryDate;
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -62,29 +55,5 @@ public class User {
 
     public void setRoles(Set<Role> roles) {
         this.roles = roles;
-    }
-
-    public String getOldPassword() {
-        return oldPassword;
-    }
-
-    public void setOldPassword(String oldPassword) {
-        this.oldPassword = oldPassword;
-    }
-
-    public Date getPasswordChangeDate() {
-        return passwordChangeDate;
-    }
-
-    public void setPasswordChangeDate(Date passwordChangeDate) {
-        this.passwordChangeDate = passwordChangeDate;
-    }
-
-    public Date getPasswordExpiryDate() {
-        return passwordExpiryDate;
-    }
-
-    public void setPasswordExpiryDate(Date passwordExpiryDate) {
-        this.passwordExpiryDate = passwordExpiryDate;
     }
 }
