@@ -50,7 +50,7 @@ public class UserController {
     }
 
     @RequestMapping(value = "/login", method = RequestMethod.GET)
-    public String login(Model model, String error, String logout) {
+    public String loginUser(Model model, String error, String logout) {
         if (error != null)
             model.addAttribute("error", "Your username and password is invalid.");
 
@@ -59,7 +59,18 @@ public class UserController {
 
         return "login";
     }
+    
+    @RequestMapping(value = "/admin", method = RequestMethod.GET)
+    public String loginAdmin(Model model, String error, String logout) {
+        if (error != null)
+            model.addAttribute("error", "Your username and password is invalid.");
 
+        if (logout != null)
+            model.addAttribute("message", "You have been logged out successfully.");
+
+        return "admin";
+    }
+    
     @RequestMapping(value = "/login/error", method = RequestMethod.GET)
     public String login(Model model) {
        model.addAttribute("error", "Your username and password is invalid.");
