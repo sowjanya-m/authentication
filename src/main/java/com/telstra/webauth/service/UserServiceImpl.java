@@ -1,8 +1,6 @@
 package com.telstra.webauth.service;
 
-import com.telstra.webauth.model.Password;
 import com.telstra.webauth.model.User;
-import com.telstra.webauth.repository.PasswordRepository;
 import com.telstra.webauth.repository.RoleRepository;
 import com.telstra.webauth.repository.UserRepository;
 
@@ -24,20 +22,21 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
     @Autowired
-    private PasswordRepository passwordRepo;
+    private PasswordService passwordService;
     @Value("${password.expiry.duration:60}")
     private int passwordExpiry;
 
     @Override
-    public void save(User user) {
-        user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
-        user.setRoles(new HashSet<>(roleRepository.findAll()));
-        //calculate and set expiry date
-        Calendar c = Calendar.getInstance();
-        c.add(Calendar.DATE, passwordExpiry);
-        user.setPasswordExpiryDate(c.getTime());
-        userRepository.save(user);
-    }
+	public void save(User user) {
+		user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
+		user.setRoles(new HashSet<>(roleRepository.findAll()));
+		// calculate and set expiry date
+		Calendar c = Calendar.getInstance();
+		c.add(Calendar.DATE, passwordExpiry);
+		user.setPasswordExpiryDate(c.getTime());
+		userRepository.save(user);
+		passwordService.logPasswordHistory(user);
+	}
 
     @Override
     public User findByUsername(String username) {
@@ -46,10 +45,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void changePassword(User user) {
-        Password password = new Password();
-        password.setUserId(user.getId());
-        password.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
-        password.setPasswordDate(new Date());
         User newUser = findByUsername(user.getUsername());
         newUser.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
         newUser.setPasswordChangeDate(new Date());
@@ -58,7 +53,7 @@ public class UserServiceImpl implements UserService {
         c.add(Calendar.DATE, passwordExpiry);
         user.setPasswordExpiryDate(c.getTime());
         userRepository.save(newUser);
-        passwordRepo.save(password);
+        passwordService.logPasswordHistory(newUser);
     }
 
 	@Override
@@ -80,4 +75,15 @@ public class UserServiceImpl implements UserService {
 	        userRepository.save(user);
 		}
 	}
+	
+	@Override
+	public void failedLoginAttempt(String username) {
+		User user = findByUsername(username);
+		if(user != null) {
+			Integer failedAttempts = user.getFailedAttempts()!=null?user.getFailedAttempts():0;
+			user.setFailedAttempts(++failedAttempts);
+	        userRepository.save(user);
+		}
+	}
 }
+

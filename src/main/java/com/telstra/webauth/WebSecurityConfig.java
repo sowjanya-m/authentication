@@ -15,6 +15,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.ExceptionMappingAuthenticationFailureHandler;
 
+import com.telstra.webauth.service.AuthenticationProvider;
+
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
@@ -25,7 +27,15 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     public BCryptPasswordEncoder bCryptPasswordEncoder() {
         return new BCryptPasswordEncoder();
     }
-
+    
+    @Bean 
+    public AuthenticationProvider authProvider() {
+    	AuthenticationProvider authProvider = new AuthenticationProvider();
+    	authProvider.setPasswordEncoder(bCryptPasswordEncoder());
+    	authProvider.setUserDetailsService(userDetailsService);
+    	return authProvider;
+    }
+    
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
@@ -39,12 +49,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                     .permitAll()
                     .and()
                 .logout()
-                    .permitAll();        
+                    .permitAll();
     }
 
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(userDetailsService).passwordEncoder(bCryptPasswordEncoder());
+        auth.authenticationProvider(authProvider());
     }
     
     @Bean
@@ -53,7 +63,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         Map<String, String> mappings = new HashMap<String, String>();
         mappings.put("org.springframework.security.authentication.CredentialsExpiredException", "/changepassword");
         mappings.put("org.springframework.security.authentication.LockedException", "/accountlocked");
-        mappings.put("org.springframework.security.authentication.BadCredentialsException", "/login?error=true");
+        mappings.put("org.springframework.security.authentication.BadCredentialsException", "/login?error");
         ex.setExceptionMappings(mappings);
         return ex;
     }

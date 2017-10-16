@@ -24,7 +24,7 @@ public class UserDetailsServiceImpl implements UserDetailsService{
     @Autowired
     private UserRepository userRepository;
     
-    @Value("${invalid.login.attempts.allowed:5}")
+    @Value("${invalid.login.attempts.allowed}")
     private Integer maxInvalidAttempts;
 
     @Override

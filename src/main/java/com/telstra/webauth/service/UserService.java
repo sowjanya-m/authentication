@@ -13,4 +13,6 @@ public interface UserService {
     
     void unlock(String username);
     
+    void failedLoginAttempt(String username);
+    
 }

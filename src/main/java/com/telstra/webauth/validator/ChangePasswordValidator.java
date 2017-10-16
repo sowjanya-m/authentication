@@ -2,7 +2,7 @@ package com.telstra.webauth.validator;
 
 import com.telstra.webauth.model.Password;
 import com.telstra.webauth.model.User;
-import com.telstra.webauth.repository.PasswordRepository;
+import com.telstra.webauth.service.PasswordService;
 import com.telstra.webauth.service.UserService;
 
 import java.util.List;
@@ -22,7 +22,10 @@ public class ChangePasswordValidator implements Validator {
     private UserService userService;
 
     @Autowired
-    private PasswordRepository passwordRepo;
+    private PasswordService passwordService;
+    
+    @Autowired
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
     
     @Override
     public boolean supports(Class<?> aClass) {
@@ -34,7 +37,7 @@ public class ChangePasswordValidator implements Validator {
         User user = (User) o;
         User existingUser = userService.findByUsername(user.getUsername());
         
-        if (existingUser != null && !new BCryptPasswordEncoder().matches(user.getOldPassword(), existingUser.getPassword())) {
+        if (existingUser != null && !bCryptPasswordEncoder.matches(user.getOldPassword(), existingUser.getPassword())) {
             errors.rejectValue("oldPassword", "Invalid.changePasswordForm.password");
         }
 
@@ -49,19 +52,14 @@ public class ChangePasswordValidator implements Validator {
         else if(!validatePassword(user.getPassword())) {
         	errors.rejectValue("password", "Weak.changePasswordForm.password");
         }
-        else if(repeatPassword(user)) {
+        else if(repeatPassword(existingUser.getId(), user.getPassword())) {
         	errors.rejectValue("password", "Repeat.changePasswordForm.password");
         }
-        
     }
     
-	private boolean repeatPassword(User user) {
-		boolean repeatPwd = false;
-		List<Password> passwordHistory = passwordRepo.findTop10ByUserIdOrderByPasswordDateAsc(user.getId());
-		if(passwordHistory != null && passwordHistory.size()>0) {
-			repeatPwd = passwordHistory.stream().anyMatch(pwd-> new BCryptPasswordEncoder().matches(user.getPassword(), pwd.getPassword()));
-		}
-		return repeatPwd;
+	private boolean repeatPassword(Long userId, String password) {
+		List<Password> passwordHistory = passwordService.retrievePasswordHistory(userId);
+		return passwordHistory.stream().anyMatch(p->bCryptPasswordEncoder.matches(password, p.getPassword()));
 	}
 
 	// validate the password
@@ -81,18 +79,15 @@ public class ChangePasswordValidator implements Validator {
 		if (forceSpecialChar) {
 			patternBuilder.append("(?=.*[@#$%])");
 		}
-
 		if (forceCapitalLetter) {
 			patternBuilder.append("(?=.*[A-Z])");
 		}
-
 		if (forceNumber) {
 			patternBuilder.append("(?=.*[0-9])");
 		}
 		if (!allowSpace) {
 			patternBuilder.append("(?=\\S+$)");
 		}
-
 		patternBuilder.append(".{" + minLength + "," + maxLength + "})");
 		return patternBuilder.toString();
 	}
