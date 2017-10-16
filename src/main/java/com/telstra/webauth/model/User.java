@@ -18,6 +18,8 @@ public class User {
     private Date passwordChangeDate;
     @Column(name = "password_expiry_date")
     private Date passwordExpiryDate;
+    @Column(name = "failed_attempts")
+    private Integer failedAttempts;
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -87,4 +89,13 @@ public class User {
     public void setPasswordExpiryDate(Date passwordExpiryDate) {
         this.passwordExpiryDate = passwordExpiryDate;
     }
+
+	public Integer getFailedAttempts() {
+		return failedAttempts;
+	}
+
+	public void setFailedAttempts(Integer failedAttempts) {
+		this.failedAttempts = failedAttempts;
+	}
+    
 }

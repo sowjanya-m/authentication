@@ -1,5 +1,8 @@
 package com.telstra.webauth;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -9,13 +12,15 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
+import org.springframework.security.web.authentication.ExceptionMappingAuthenticationFailureHandler;
 
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private UserDetailsService userDetailsService;
-
+    
     @Bean
     public BCryptPasswordEncoder bCryptPasswordEncoder() {
         return new BCryptPasswordEncoder();
@@ -25,19 +30,32 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .authorizeRequests()
-                    .antMatchers("/resources/**", "/registration").permitAll()
+                    .antMatchers("/resources/**", "/registration","/changepassword","/accountlocked", "/login").permitAll()
                     .anyRequest().authenticated()
                     .and()
                 .formLogin()
                     .loginPage("/login")
+                    .failureHandler(exceptionMappingAuthenticationFailureHandler())
                     .permitAll()
                     .and()
                 .logout()
-                    .permitAll();
+                    .permitAll();        
     }
 
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(userDetailsService).passwordEncoder(bCryptPasswordEncoder());
     }
+    
+    @Bean
+    AuthenticationFailureHandler exceptionMappingAuthenticationFailureHandler(){
+        ExceptionMappingAuthenticationFailureHandler ex = new ExceptionMappingAuthenticationFailureHandler();
+        Map<String, String> mappings = new HashMap<String, String>();
+        mappings.put("org.springframework.security.authentication.CredentialsExpiredException", "/changepassword");
+        mappings.put("org.springframework.security.authentication.LockedException", "/accountlocked");
+        mappings.put("org.springframework.security.authentication.BadCredentialsException", "/login?error=true");
+        ex.setExceptionMappings(mappings);
+        return ex;
+    }
+    
 }

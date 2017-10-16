@@ -3,8 +3,8 @@ package com.telstra.webauth.web;
 import com.telstra.webauth.model.User;
 import com.telstra.webauth.service.SecurityService;
 import com.telstra.webauth.service.UserService;
+import com.telstra.webauth.validator.ChangePasswordValidator;
 import com.telstra.webauth.validator.UserValidator;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -23,6 +23,9 @@ public class UserController {
 
     @Autowired
     private UserValidator userValidator;
+
+    @Autowired
+    private ChangePasswordValidator passwordValidator;
 
     @RequestMapping(value = "/registration", method = RequestMethod.GET)
     public String registration(Model model) {
@@ -57,8 +60,40 @@ public class UserController {
         return "login";
     }
 
+    @RequestMapping(value = "/login/error", method = RequestMethod.GET)
+    public String login(Model model) {
+       model.addAttribute("error", "Your username and password is invalid.");
+       return "login";
+    }
+
     @RequestMapping(value = {"/", "/welcome"}, method = RequestMethod.GET)
     public String welcome(Model model) {
         return "welcome";
     }
+    
+    @RequestMapping(value = "/changepassword", method = RequestMethod.GET)
+    public String changePassword(Model model) {
+        model.addAttribute("changePasswordForm", new User());
+
+        return "changepassword";
+    }
+
+    @RequestMapping(value = "/changepassword", method = RequestMethod.POST)
+    public String changePassword(@ModelAttribute("changePasswordForm") User changePasswordForm, BindingResult bindingResult, Model model) {
+        passwordValidator.validate(changePasswordForm, bindingResult);
+
+        if (bindingResult.hasErrors()) {
+            return "changepassword";
+        }
+        userService.changePassword(changePasswordForm);
+        model.addAttribute("message", "Password changed successfully. Login using new credentials.");
+        return "changepasswordsuccess";
+    }
+
+    @RequestMapping(value = "/accountlocked", method = RequestMethod.GET)
+    public String accountLocked(Model model) {
+        return "accountlocked";
+    }
+
 }
+

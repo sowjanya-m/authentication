@@ -6,4 +6,11 @@ public interface UserService {
     void save(User user);
 
     User findByUsername(String username);
+
+    void changePassword(User user);
+    
+    void resetPassword(String username);
+    
+    void unlock(String username);
+    
 }

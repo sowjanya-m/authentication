@@ -46,3 +46,7 @@ body {
 .has-error {
     color: red
 }
+
+.form-heading{
+    color:green;
+}
