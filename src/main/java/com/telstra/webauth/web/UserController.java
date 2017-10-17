@@ -106,9 +106,14 @@ public class UserController {
 
     @RequestMapping(value = "/accountlocked", method = RequestMethod.GET)
     public String accountLocked(Model model) {
-    	
         return "accountlocked";
     }
 
+    @RequestMapping(value = "/passwordexpired", method = RequestMethod.GET)
+    public String credentialsExpired(Model model) {
+    	model.addAttribute("changePasswordForm", new User());
+    	model.addAttribute("message", "Password expired, Please change your password");
+        return "changepassword";
+    }
 }
 
