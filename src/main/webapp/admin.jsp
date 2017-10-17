@@ -16,6 +16,7 @@
     <title>Create an account</title>
 
     <link href="${contextPath}/resources/css/bootstrap.min.css" rel="stylesheet">
+    <link href="${contextPath}/resources/css/common.css" rel="stylesheet">
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
@@ -33,7 +34,29 @@
 
         <h2>Welcome ${pageContext.request.userPrincipal.name} | <a onclick="document.forms['logoutForm'].submit()">Logout</a> | <a href="${contextPath}/changepassword">Change password</a></h2>
     </c:if>
-
+    
+    
+    <table border="1" class="table">
+    	<col width="150">
+  		<col width="200">
+  		<col width="200">
+    	<thead>
+    		<tr align="center">
+	    		<td>User</td>
+	    		<td>Password Reset</td>
+	    		<td> Unlock Account</td>
+    		</tr>
+    	</thead>
+    	<tbody >
+	     <c:forEach items="${users}" var="user">
+	    	<tr align="center">
+	          <td class="table_data" ><c:out value="${user.username}" /></td>
+	          <td><a href="reset" > reset </a> </td>
+	          <td><a href="unlock" >unlock</a> </td>
+	        </tr>
+	    </c:forEach>
+	    </tbody> 
+	</table>
 </div>
 <!-- /container -->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
