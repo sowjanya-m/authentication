@@ -50,3 +50,11 @@ body {
 .form-heading{
     color:green;
 }
+
+.table{
+	
+	margin-top: 50px;
+}
+.table_data{
+	color:blue;
+}

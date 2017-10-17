@@ -1,5 +1,7 @@
 package com.telstra.webauth.service;
 
+import java.util.List;
+
 import com.telstra.webauth.model.User;
 
 public interface UserService {
@@ -14,5 +16,7 @@ public interface UserService {
     void unlock(String username);
     
     void failedLoginAttempt(String username);
+    
+    List<User> findAllUsers();
     
 }

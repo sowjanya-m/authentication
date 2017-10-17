@@ -68,6 +68,7 @@ public class UserController {
         if (logout != null)
             model.addAttribute("message", "You have been logged out successfully.");
 
+        model.addAttribute("users",userService.findAllUsers());
         return "admin";
     }
     
@@ -100,9 +101,12 @@ public class UserController {
         model.addAttribute("message", "Password changed successfully. Login using new credentials.");
         return "changepasswordsuccess";
     }
+    
+    
 
     @RequestMapping(value = "/accountlocked", method = RequestMethod.GET)
     public String accountLocked(Model model) {
+    	
         return "accountlocked";
     }
 

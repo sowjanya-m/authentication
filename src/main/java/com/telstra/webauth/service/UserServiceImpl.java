@@ -1,5 +1,6 @@
 package com.telstra.webauth.service;
 
+import com.telstra.webauth.model.Role;
 import com.telstra.webauth.model.User;
 import com.telstra.webauth.repository.RoleRepository;
 import com.telstra.webauth.repository.UserRepository;
@@ -12,6 +13,8 @@ import org.springframework.stereotype.Service;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -29,7 +32,10 @@ public class UserServiceImpl implements UserService {
     @Override
 	public void save(User user) {
 		user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
-		user.setRoles(new HashSet<>(roleRepository.findAll()));
+		//user.setRoles(new HashSet<>(roleRepository.findAll()));
+		Set<Role> roles=new HashSet<>();
+		roles.add(roleRepository.findOne(new Long(1)));
+		user.setRoles(roles);
 		// calculate and set expiry date
 		Calendar c = Calendar.getInstance();
 		c.add(Calendar.DATE, passwordExpiry);
@@ -42,6 +48,11 @@ public class UserServiceImpl implements UserService {
     public User findByUsername(String username) {
         return userRepository.findByUsername(username);
     }
+    
+	@Override
+	public List<User> findAllUsers() {
+		return userRepository.findAll();
+	}    
 
     @Override
     public void changePassword(User user) {
@@ -85,5 +96,7 @@ public class UserServiceImpl implements UserService {
 	        userRepository.save(user);
 		}
 	}
+
+
 }
 
