@@ -28,15 +28,19 @@
 
 <body>
 
+<div>
+	<h2 align="center" width="100%"><c:out value="${message}"></c:out></h2>
+
+</div>
 <div class="container">
 
     <form:form method="POST" modelAttribute="changePasswordForm" class="form-signin">
-        <h2 class="form-signin-heading">Change password</h2>
+    	    
         <form:input type="text" path="username" class="form-control" placeholder="username"
                                     autofocus="true" value = "${pageContext.request.userPrincipal.name}"></form:input>
         <spring:bind path="oldPassword">
             <div class="form-group ${status.error ? 'has-error' : ''}">
-                <form:input type="text" path="oldPassword" class="form-control" placeholder="password"
+                <form:input type="password" path="oldPassword" class="form-control" placeholder="Enter old password"
                             autofocus="true"></form:input>
                 <form:errors path="oldPassword"></form:errors>
             </div>
@@ -52,10 +56,12 @@
         <spring:bind path="passwordConfirm">
             <div class="form-group ${status.error ? 'has-error' : ''}">
                 <form:input type="password" path="passwordConfirm" class="form-control"
-                            placeholder="Confirm your new password"></form:input>
+                            placeholder="Confirm new password"></form:input>
                 <form:errors path="passwordConfirm"></form:errors>
             </div>
         </spring:bind>
+        
+        
 
         <button class="btn btn-lg btn-primary btn-block" type="submit">Submit</button>
     </form:form>

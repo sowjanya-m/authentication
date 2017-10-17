@@ -44,7 +44,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .authorizeRequests()
-                    .antMatchers("/resources/**", "/registration","/changepassword","/accountlocked", "/login").permitAll()
+                    .antMatchers("/resources/**", "/registration","/passwordexpired","/accountlocked", "/login").permitAll()
                     .anyRequest().authenticated()
                     .and()
                 .formLogin()
@@ -66,7 +66,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     AuthenticationFailureHandler exceptionMappingAuthenticationFailureHandler(){
         ExceptionMappingAuthenticationFailureHandler ex = new ExceptionMappingAuthenticationFailureHandler();
         Map<String, String> mappings = new HashMap<String, String>();
-        mappings.put("org.springframework.security.authentication.CredentialsExpiredException", "/changepassword");
+        mappings.put("org.springframework.security.authentication.CredentialsExpiredException", "/passwordexpired");
         mappings.put("org.springframework.security.authentication.LockedException", "/accountlocked");
         mappings.put("org.springframework.security.authentication.BadCredentialsException", "/login?error");
         ex.setExceptionMappings(mappings);
