@@ -90,30 +90,42 @@ public class UserController {
         return "changepassword";
     }
 
-    @RequestMapping(value = "/changepassword", method = RequestMethod.POST)
-    public String changePassword(@ModelAttribute("changePasswordForm") User changePasswordForm, BindingResult bindingResult, Model model) {
-        passwordValidator.validate(changePasswordForm, bindingResult);
+	@RequestMapping(value = "/changepassword", method = RequestMethod.POST)
+	public String changePassword(@ModelAttribute("changePasswordForm") User changePasswordForm,
+			BindingResult bindingResult, Model model) {
+		passwordValidator.validate(changePasswordForm, bindingResult);
 
-        if (bindingResult.hasErrors()) {
-            return "changepassword";
-        }
-        userService.changePassword(changePasswordForm);
-        model.addAttribute("message", "Password changed successfully. Login using new credentials.");
-        return "changepasswordsuccess";
-    }
-    
-    
+		if (bindingResult.hasErrors()) {
+			return "changepassword";
+		}
+		userService.changePassword(changePasswordForm);
+		model.addAttribute("message", "Password changed successfully. Login using new credentials.");
+		return "changepasswordsuccess";
+	}
 
-    @RequestMapping(value = "/accountlocked", method = RequestMethod.GET)
-    public String accountLocked(Model model) {
-        return "accountlocked";
-    }
+	@RequestMapping(value = "/accountlocked", method = RequestMethod.GET)
+	public String accountLocked(Model model) {
+		return "accountlocked";
+	}
 
-    @RequestMapping(value = "/passwordexpired", method = RequestMethod.GET)
-    public String credentialsExpired(Model model) {
-    	model.addAttribute("changePasswordForm", new User());
-    	model.addAttribute("message", "Password expired, Please change your password");
-        return "changepassword";
-    }
+	@RequestMapping(value = "/passwordexpired", method = RequestMethod.POST)
+	public String passwordExpired(@ModelAttribute("changePasswordForm") User changePasswordForm,
+			BindingResult bindingResult, Model model) {
+		passwordValidator.validate(changePasswordForm, bindingResult);
+		if (bindingResult.hasErrors()) {
+			return "changepassword";
+		}
+		userService.changePassword(changePasswordForm);
+		model.addAttribute("message", "Password changed successfully. Login using new credentials.");
+		return "changepasswordsuccess";
+	}
+
+	@RequestMapping(value = "/passwordexpired", method = RequestMethod.GET)
+	public String passwordExpired(Model model) {
+		model.addAttribute("changePasswordForm", new User());
+		model.addAttribute("message", "Password expired, Please change your password");
+		return "changepassword";
+	}
+	
 }
 

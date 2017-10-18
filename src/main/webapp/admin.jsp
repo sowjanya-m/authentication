@@ -25,6 +25,9 @@
     <![endif]-->
 </head>
 <body>
+<div>
+	<h2 align="center" width="100%"><c:out value="${message}"></c:out></h2>
+</div>
 <div class="container">
 
     <c:if test="${pageContext.request.userPrincipal.name != null}">
@@ -51,8 +54,8 @@
 	     <c:forEach items="${users}" var="user">
 	    	<tr align="center">
 	          <td class="table_data" ><c:out value="${user.username}" /></td>
-	          <td><a href="reset" > reset </a> </td>
-	          <td><a href="unlock" >unlock</a> </td>
+	          <td><a href="${contextPath}/resetpassword/${user.username}" >reset </a> </td>
+	          <td><a href="${contextPath}/accountunlock/${user.username}" >unlock</a> </td>
 	        </tr>
 	    </c:forEach>
 	    </tbody> 

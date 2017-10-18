@@ -59,18 +59,24 @@ public class UserServiceImpl implements UserService {
         User newUser = findByUsername(user.getUsername());
         newUser.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
         newUser.setPasswordChangeDate(new Date());
-        //calculate and set expiry date
+		//calculate and set expiry date
         Calendar c = Calendar.getInstance();
         c.add(Calendar.DATE, passwordExpiry);
-        user.setPasswordExpiryDate(c.getTime());
+        newUser.setPasswordExpiryDate(c.getTime());
         userRepository.save(newUser);
         passwordService.logPasswordHistory(newUser);
     }
 
 	@Override
-	public void resetPassword(String username) {
-		// TODO Auto-generated method stub
-		
+	public String resetPassword(String userName) {
+        User user = findByUsername(userName);
+        String randomPassword = passwordService.generateRandomPassword();
+        user.setPassword(bCryptPasswordEncoder.encode(randomPassword));
+        user.setPasswordChangeDate(new Date());
+        expirePassword(user);
+        userRepository.save(user);
+        passwordService.logPasswordHistory(user);
+        return randomPassword;
 	}
 
 	@Override
@@ -79,10 +85,7 @@ public class UserServiceImpl implements UserService {
 		if(user != null) {
 			//reset failed attempts to 0 and expire the password
 			user.setFailedAttempts(0);
-			 //calculate and set expiry date
-	        Calendar c = Calendar.getInstance();
-	        c.add(Calendar.DATE, -1);
-	        user.setPasswordExpiryDate(c.getTime());
+			expirePassword(user);
 	        userRepository.save(user);
 		}
 	}
@@ -95,6 +98,14 @@ public class UserServiceImpl implements UserService {
 			user.setFailedAttempts(++failedAttempts);
 	        userRepository.save(user);
 		}
+	}
+	
+	private void expirePassword(User user) {
+		//calculate and set expiry date
+        Calendar c = Calendar.getInstance();
+        c.add(Calendar.DATE, -1);
+        user.setPasswordExpiryDate(c.getTime());
+		
 	}
 
 

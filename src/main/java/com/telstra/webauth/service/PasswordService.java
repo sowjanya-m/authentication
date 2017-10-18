@@ -10,4 +10,6 @@ public interface PasswordService {
 	public void logPasswordHistory(User user);
 	
 	public List<Password> retrievePasswordHistory(Long userId);
+	
+	public String generateRandomPassword();
 }

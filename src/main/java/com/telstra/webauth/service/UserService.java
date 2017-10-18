@@ -11,7 +11,7 @@ public interface UserService {
 
     void changePassword(User user);
     
-    void resetPassword(String username);
+    String resetPassword(String username);
     
     void unlock(String username);
     
