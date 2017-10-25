@@ -15,24 +15,19 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import org.springframework.stereotype.Component;
 
 @Component
-public class SimpleAuthenticationSuccessHandler implements AuthenticationSuccessHandler{
-	
+public class SimpleAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
+
 	private RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
-	
+
 	@Override
-	public void onAuthenticationSuccess(HttpServletRequest arg0, HttpServletResponse arg1, Authentication authentication)
-			throws IOException, ServletException {
-		
+	public void onAuthenticationSuccess(HttpServletRequest arg0, HttpServletResponse arg1,
+			Authentication authentication) throws IOException, ServletException {
+
 		Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
 		authorities.forEach(authority -> {
-			if(authority.getAuthority().equals("user")) {
-				try {
-					redirectStrategy.sendRedirect(arg0, arg1, "/welcome");
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			} else if(authority.getAuthority().equals("admin")) {
+			if (null == authority.getAuthority()) {
+				throw new IllegalStateException();
+			} else if (authority.getAuthority().equals("admin")) {
 				try {
 					redirectStrategy.sendRedirect(arg0, arg1, "/admin");
 				} catch (Exception e) {
@@ -40,9 +35,14 @@ public class SimpleAuthenticationSuccessHandler implements AuthenticationSuccess
 					e.printStackTrace();
 				}
 			} else {
-	            throw new IllegalStateException();
-	        }
+				try {
+					redirectStrategy.sendRedirect(arg0, arg1, "/welcome");
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
 		});
-		
+
 	}
 }
